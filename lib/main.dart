@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myportofolio_mobile/menu.dart';
+import 'package:myportofolio_mobile/screens/menu.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +12,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MyPortfolio',
-      theme: ThemeData(// This is the theme of your application.
+      theme: ThemeData(
+        // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
         // the application has a purple toolbar. Then, without quitting the app,
@@ -37,4 +38,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

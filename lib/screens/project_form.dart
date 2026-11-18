@@ -154,14 +154,11 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                       context: context,
                       builder: (dialogContext) {
                         return AlertDialog(
-                          title: const Text(
-                            'Proyek berhasil ditambahkan!',
-                          ),
+                          title: const Text('Proyek berhasil ditambahkan!'),
                           content: SingleChildScrollView(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Nama Proyek: $_projectName'),
                                 Text('Deskripsi: $_description'),
