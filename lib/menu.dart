@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
+import 'package:myportofolio_mobile/project_form.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
@@ -146,15 +147,16 @@ class ItemCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         // Aksi ketika kartu ditekan oleh pengguna.
-        onTap: () {
-          // Menampilkan SnackBar dengan pesan interaktif.
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text("Kamu telah menekan tombol ${item.name}!"),
+      onTap: () {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                "Kamu telah menekan tombol ${item.name}!",
               ),
-            );
+            ),
+          );
         },
         child: Container(
           padding: const EdgeInsets.all(8),
