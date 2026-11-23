@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 
@@ -10,27 +11,32 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      // Menggunakan warna sekunder dari skema tema aplikasi.
+      // Setiap kartu menggunakan warna yang ditentukan pada daftar menu.
       color: item.color,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         // Aksi ketika kartu ditekan oleh pengguna.
         onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text("Kamu telah menekan tombol ${item.name}!"),
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          if (item.name == 'Tambah Proyek') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProjectFormPage()),
+            );
+          } else if (item.name == 'Tambah Pengalaman') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ExperienceFormPage(),
               ),
             );
-            if (item.name == 'Tambah Proyek') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProjectFormPage(),
-                ),
-              );
-            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Kamu telah menekan tombol ${item.name}!'),
+              ),
+            );
+          }
         },
         child: Container(
           padding: const EdgeInsets.all(8),
