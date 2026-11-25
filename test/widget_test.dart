@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:myportofolio_mobile/main.dart';
+import 'package:myportofolio_mobile/screens/menu.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:provider/provider.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+
+Widget buildTestApp({Widget? home}) {
+  final apiClient = ApiClient();
+  addTearDown(apiClient.close);
+  return MultiProvider(
+    providers: [
+      Provider<ApiClient>.value(value: apiClient),
+      ChangeNotifierProvider(
+        create: (_) => AuthState(apiClient, initialToken: 'test-token'),
+      ),
+    ],
+    child: MaterialApp(home: home ?? MyHomePage()),
+  );
+}
 
 Future<void> pressSave(WidgetTester tester) async {
   final save = find.widgetWithText(ElevatedButton, 'Simpan');
@@ -15,7 +32,7 @@ void main() {
   testWidgets('Kartu dan drawer membuka pengalaman; Home dan Back bekerja', (
     tester,
   ) async {
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(buildTestApp());
     await tester.tap(find.text('Tambah Pengalaman'));
     await tester.pumpAndSettle();
     expect(find.byType(ExperienceFormPage), findsOneWidget);
@@ -63,7 +80,7 @@ void main() {
   testWidgets('Validasi menolak spasi, judul panjang, dan URL salah', (
     tester,
   ) async {
-    await tester.pumpWidget(const MaterialApp(home: ExperienceFormPage()));
+    await tester.pumpWidget(buildTestApp(home: const ExperienceFormPage()));
     final fields = find.byType(TextFormField);
     await tester.enterText(fields.at(0), '   ');
     await tester.enterText(fields.at(1), '   ');
@@ -125,7 +142,7 @@ void main() {
   testWidgets('Pemilih tanggal dan waktu bisa diisi dan dikosongkan', (
     tester,
   ) async {
-    await tester.pumpWidget(const MaterialApp(home: ExperienceFormPage()));
+    await tester.pumpWidget(buildTestApp(home: const ExperienceFormPage()));
     final end = find.byType(TextFormField).last;
     await tester.ensureVisible(end);
     await tester.tap(end);
@@ -160,7 +177,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetViewInsets);
 
-      await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(buildTestApp());
       expect(tester.takeException(), isNull);
       await tester.ensureVisible(find.text('Tambah Pengalaman'));
       await tester.tap(find.text('Tambah Pengalaman'));
