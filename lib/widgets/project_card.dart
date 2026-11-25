@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/screens/project_list_screen.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:provider/provider.dart';
 
 class ItemCard extends StatelessWidget {
   final ItemHomepage item;
@@ -10,31 +14,44 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = context.watch<AuthState>().isLoggedIn;
+    final label = item.name == 'Logout' && !isLoggedIn ? 'Login' : item.name;
+    final icon = item.name == 'Logout' && !isLoggedIn ? Icons.login : item.icon;
     return Material(
       // Setiap kartu menggunakan warna yang ditentukan pada daftar menu.
       color: item.color,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         // Aksi ketika kartu ditekan oleh pengguna.
-        onTap: () {
+        onTap: () async {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          if (item.name == 'Tambah Proyek') {
+          if (item.name == 'Lihat Proyek') {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const ProjectFormPage()),
+              MaterialPageRoute(builder: (_) => const ProjectListScreen()),
             );
-          } else if (item.name == 'Tambah Pengalaman') {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ExperienceFormPage(),
-              ),
-            );
-          } else {
+            return;
+          }
+          if (item.name == 'Tambah Proyek' ||
+              item.name == 'Tambah Pengalaman') {
+            final allowed = await ensureLoggedIn(context);
+            if (!context.mounted || !allowed) return;
+            final Widget page = item.name == 'Tambah Proyek'
+                ? const ProjectFormPage()
+                : const ExperienceFormPage();
+            Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+            return;
+          }
+          if (item.name == 'Logout') {
+            final auth = context.read<AuthState>();
+            if (!auth.isLoggedIn) {
+              await ensureLoggedIn(context);
+              return;
+            }
+            await auth.logout();
+            if (!context.mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Kamu telah menekan tombol ${item.name}!'),
-              ),
+              const SnackBar(content: Text('Kamu sudah keluar dari aplikasi.')),
             );
           }
         },
@@ -44,10 +61,10 @@ class ItemCard extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(item.icon, color: Colors.white, size: 30.0),
+                Icon(icon, color: Colors.white, size: 30.0),
                 const Padding(padding: EdgeInsets.all(3)),
                 Text(
-                  item.name,
+                  label,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.white),
                 ),
